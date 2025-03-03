@@ -1,4 +1,4 @@
-import json
+import json, os
 
 
 OFFERS_FILE = "offers.json"
@@ -30,11 +30,53 @@ def create_new_offer(offers, products, customers):
     Prompt user to create a new offer by selecting a customer, entering date,
     choosing products, and calculating totals.
     """
-    # Omogućite unos kupca
+    os.system('cls')
+    
+    # Varijable
+    # Rjecnik ponude
+    offer = {}
+    # Redni broj kupca
+    counter = 1
+    # Lista proizvoda za izbor
+    items = []
+    
+    print("Lista kupaca: ")
+    print()
+    for customer in customers:
+        print(f"{counter}. {customer['name']}")
+        counter += 1 
+    
+    print()
+    customer_choice = int(input("Selektirajte broj kupca: ")) - 1
+    customer = customers[customer_choice]
+    print()
+    print("Kreirajte datum ponude.")
+    print()
+    year = input("Unesite godinu: ")
+    month = input("Unesite mjesec: ")
+    day = input("Unesite dan: ")
+    date = f'{year}-{month}-{day}'
+    
+    while True:
+        print("\nOdaberite proizvod:")
+        counter = 1
+        for product in products:
+            print()
+            print(f"{counter}. {product['name']} \nOpis proizvoda: {product['description']} \nCijena: {product['price']}")
+            print()
+            counter += 1
+        
+        product_choice = int(input("Odaberite proizvod: ")) - 1
+        product = products[product_choice]
+        
+        items.append(product)
+        print(items)
+        more_items = input("Želite li dodati još proizvoda? (da/ne): ").lower()
+        if more_items != "da":
+            break
     # Izračunajte sub_total, tax i total
     # Dodajte novu ponudu u listu offers
     pass
-
 
 # TODO: Implementirajte funkciju za upravljanje proizvodima.
 def manage_products(products):
@@ -91,6 +133,7 @@ def main():
         print("3. Upravljanje korisnicima")
         print("4. Prikaz ponuda")
         print("5. Izlaz")
+        print()
         choice = input("Odabrana opcija: ")
 
         if choice == "1":
