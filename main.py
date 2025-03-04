@@ -40,16 +40,17 @@ def create_new_offer(offers, products, customers):
     # Lista proizvoda za izbor
     items = []
     
+    CHARS = 40 * '-'
+    
     print("Lista kupaca: ")
-    print()
     for customer in customers:
         print(f"{counter}. {customer['name']}")
         counter += 1 
     
     print()
-    customer_choice = int(input("Selektirajte broj kupca: ")) - 1
+    customer_choice = int(input("Selektirajte kupca: ")) - 1
     customer = customers[customer_choice]
-    print()
+    os.system('cls')
     print("Kreirajte datum ponude.")
     print()
     year = input("Unesite godinu: ")
@@ -57,26 +58,62 @@ def create_new_offer(offers, products, customers):
     day = input("Unesite dan: ")
     date = f'{year}-{month}-{day}'
     
+    # Dodavanje proizvoda u ponude
     while True:
-        print("\nOdaberite proizvod:")
+        os.system('cls')
+        print()
+        print("Lista proizvoda:")
+        print(CHARS)
         counter = 1
         for product in products:
-            print()
-            print(f"{counter}. {product['name']} \nOpis proizvoda: {product['description']} \nCijena: {product['price']}")
-            print()
+            print(f"{counter}. {product['name']} \nOpis proizvoda: {product['description']} \nCijena: {product['price']:.2f}")
+            print(CHARS)
             counter += 1
         
         product_choice = int(input("Odaberite proizvod: ")) - 1
         product = products[product_choice]
         
-        items.append(product)
-        print(items)
-        more_items = input("Želite li dodati još proizvoda? (da/ne): ").lower()
+         # Unos kolicine
+        quantity = int(input(f"Unesite kolicinu za {product['name']}: "))
+        
+        # Racunanje ukupne cijene za taj proizvod
+        item_total = quantity * product['price']
+        
+        # Dodavanje proizvoda u items listu 
+        item = {
+            'product_name': product['name'],
+            'product_id': product['id'],
+            'description': product['description'],
+            'quantity': quantity,
+            'price': product['price'],
+            'item_total': item_total
+        }
+        
+        items.append(item)
+        
+        more_items = input("Zelite li dodati još proizvoda? (da/ne): ").lower()
         if more_items != "da":
             break
     # Izračunajte sub_total, tax i total
+    sub_total = sum(item['item_total'] for item in items)
+    tax = sub_total * 0.10
+    total = sub_total + tax
+    
+    # Generirani broj ponude
+    offer_number = len(offers) + 1
     # Dodajte novu ponudu u listu offers
-    pass
+    offer['offer_number'] = offer_number
+    offer['customer'] = customer
+    offer['date'] = date
+    offer['items'] = items
+    offer['sub_total'] = sub_total
+    offer['tax'] = tax
+    offer['total'] = total
+    
+    offers.append(offer)
+    # Pomocna funkcija
+    os.system('cls')
+    print_offer(offer)
 
 # TODO: Implementirajte funkciju za upravljanje proizvodima.
 def manage_products(products):
@@ -84,19 +121,117 @@ def manage_products(products):
     Allows the user to add a new product or modify an existing product.
     """
     # Omogućite korisniku izbor između dodavanja ili izmjene proizvoda
-    # Za dodavanje: unesite podatke o proizvodu i dodajte ga u listu products
-    # Za izmjenu: selektirajte proizvod i ažurirajte podatke
-    pass
-
-
+    os.system('cls')
+    
+    while True:
+        print("Izaberite opciju:")
+        print()
+        print("1. Dodajte novi proizvod")
+        print("2. Izmjenite proizvod")
+        print("3. Izadjite natrag na glavni izbornik")
+        print()
+        choice = input("Odabrana opcija: ")
+        
+        # Za dodavanje: unesite podatke o proizvodu i dodajte ga u listu products
+        if choice == '1':
+            id = len(products) + 1
+            name = input('Unesite ime proizvoda: ')
+            description = input('Ukratko opisite proizvod: ')
+            price = float(input('Unesite cijenu proizvoda: '))
+            
+            new_product = {}
+            new_product['id'] = id
+            new_product['name'] = name
+            new_product['description'] = description
+            new_product['price'] = price
+            
+            products.append(new_product)
+            os.system('cls')
+            print(f"Proizvod {name} je uspjesno dodan.")
+        # Za izmjenu: selektirajte proizvod i ažurirajte podatke
+        elif choice == '2':
+            counter = 1
+            print("Lista proizvoda:")
+            print()
+            
+            for product in products:
+                print(f"{counter}. {product['name']}")
+                counter += 1 
+                
+            product_choice = int(input('Izaberite proizvod koji zelite promijeniti: ')) - 1
+            
+            if 0 <= product_choice < len(products):
+                product = products[product_choice]
+                os.system('cls')
+                print(f"Izmjena proizvoda: {product['name']}")
+                name = input(f"Ime novog proizvoda: ")
+                description = input(f"Opis novog proizvoda: ")
+                price = float(input(f"Cijena novog proizvoda: "))
+                
+                product['name'] = name
+                product['description'] = description
+                product['price'] = price
+                
+                os.system('cls')
+                print(f"Proizvod {product['name']} je uspjesno promijenjen.")
+            else:
+                print("Neispravan odabir proizvoda.")
+            
+        elif choice == "3":
+            os.system('cls')
+            return
+        else:
+            print("Krivi izbor. Pokušajte ponovo.")
+                
 # TODO: Implementirajte funkciju za upravljanje kupcima.
 def manage_customers(customers):
     """
     Allows the user to add a new customer or view all customers.
     """
-    # Za dodavanje: omogući unos imena kupca, emaila i unos VAT ID-a
-    # Za pregled: prikaži listu svih kupaca
-    pass
+    os.system('cls')
+    while True:
+        print()
+        print("Izaberite opciju:")
+        print()
+        print("1. Unesite novog kupca")
+        print("2. Ispisi sve kupce")
+        print("3. Izadjite natrag na glavni izbornik")
+        print()
+        
+        choice = input("Odabrana opcija: ")
+        
+        # Za dodavanje: omogući unos imena kupca, emaila i unos VAT ID-a
+        if choice == '1':
+            print('Unesite podatke o novom kupcu:')
+            
+            name = input('Ime kupca: ')
+            email = input('Email kupca: ')
+            vat_id = input('VAT ID kupca: ')
+            
+            new_customer = {}
+            new_customer['name'] = name
+            new_customer['email'] = email
+            new_customer['vat_id'] = vat_id
+            
+            customers.append(new_customer)
+            os.system('cls')
+            print(f"Kupac {name} je uspješno dodan.")
+        
+        # Za pregled: prikaži listu svih kupaca    
+        elif choice == "2":
+            os.system('cls')
+            counter = 1
+            print('Lista kupaca:')
+            for customer in customers:
+                print(f"{counter}. {customer['name']} \n{customer['email']} \n{customer['vat_id']}")
+                counter += 1 
+            
+        elif choice == "3":
+            os.system('cls')
+            return
+        else:
+            print('Krivi izbor. Pokusajte ponovo.')
+            
 
 
 # TODO: Implementirajte funkciju za prikaz ponuda.
@@ -105,8 +240,16 @@ def display_offers(offers):
     Display all offers, offers for a selected month, or a single offer by ID.
     """
     # Omogućite izbor pregleda: sve ponude, po mjesecu ili pojedinačna ponuda
+    while True:
+        print("Izaberite opciju:")
+        print()
+        print("1. Prikaz relevantnih ponuda")
+        print("2. Prikaz ponud po ID-u")
+        print("3. Izadjite natrag na glavni izbornik")
+        print()
+        
+        choice = input("Odabrana opcija: ")
     # Prikaz relevantnih ponuda na temelju izbora
-    pass
 
 
 # Pomoćna funkcija za prikaz jedne ponude
